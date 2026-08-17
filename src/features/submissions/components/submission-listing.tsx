@@ -27,6 +27,20 @@ import { submissionsQueryOptions } from '../api/queries';
 import { deleteSubmissionMutation } from '../api/mutations';
 import type { Submission } from '../api/types';
 
+async function openDocument(key: string) {
+  try {
+    const res = await fetch(`/api/uploads/sign?key=${encodeURIComponent(key)}`);
+    const result = await res.json().catch(() => ({ success: false, message: '' }));
+    if (!res.ok || !result.success) {
+      toast.error(result.message || 'Could not open document');
+      return;
+    }
+    window.open(result.url, '_blank', 'noopener,noreferrer');
+  } catch {
+    toast.error('Could not open document');
+  }
+}
+
 export function SubmissionTable() {
   const { data } = useSuspenseQuery(submissionsQueryOptions());
   const submissions = data.submissions ?? [];
@@ -127,6 +141,32 @@ export function SubmissionTable() {
                     <p className='mt-1 whitespace-pre-wrap text-muted-foreground'>
                       {viewing.message}
                     </p>
+                  </div>
+                )}
+                {(typeof viewing.payload?.licenceFileKey === 'string' ||
+                  typeof viewing.payload?.feeFileKey === 'string') && (
+                  <div>
+                    <strong>Documents:</strong>
+                    <div className='mt-1 flex flex-wrap gap-2'>
+                      {typeof viewing.payload?.licenceFileKey === 'string' && (
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          onClick={() => openDocument(viewing.payload.licenceFileKey as string)}
+                        >
+                          View licence document
+                        </Button>
+                      )}
+                      {typeof viewing.payload?.feeFileKey === 'string' && (
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          onClick={() => openDocument(viewing.payload.feeFileKey as string)}
+                        >
+                          View deposit slip
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 )}
                 {Object.keys(viewing.payload ?? {}).length > 0 && (

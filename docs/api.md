@@ -66,6 +66,7 @@ member row by email match, or `null`).
 | `/api/submissions` | GET | `admin` | list contact/membership submissions |
 | `/api/submissions/[id]` | DELETE | `admin` | |
 | `/api/upload` | POST | `admin` | `multipart/form-data`, field `file`; image only, ≤8MB; uploads to Vercel Blob, returns `{ url }` |
+| `/api/uploads/sign` | GET | `submissions:read` | `?key=membership/...` — presigns a 5-minute GET URL for a membership document in the R2 bucket `../web`'s upload route wrote to. Rejects any key outside the `membership/` prefix. |
 | `/api/users` | GET/POST | none (mock data, unrelated to real `auth_users`) | leftover template code |
 | `/api/users/[id]` | PUT/DELETE | none (mock) | leftover template code |
 
