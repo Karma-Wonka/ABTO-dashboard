@@ -1,0 +1,33 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+interface UserAvatarProfileProps {
+  className?: string;
+  showInfo?: boolean;
+  user: {
+    image?: string | null;
+    name?: string | null;
+    email?: string | null;
+  } | null;
+}
+
+export function UserAvatarProfile({ className, showInfo = false, user }: UserAvatarProfileProps) {
+  const label = user?.name || user?.email || '';
+
+  return (
+    <div className='flex items-center gap-2'>
+      <Avatar className={className}>
+        <AvatarImage src={user?.image || ''} alt={label} />
+        <AvatarFallback className='rounded-lg'>
+          {label.slice(0, 2).toUpperCase() || 'AB'}
+        </AvatarFallback>
+      </Avatar>
+
+      {showInfo && (
+        <div className='grid flex-1 text-left text-sm leading-tight'>
+          <span className='truncate font-semibold'>{user?.name || user?.email || ''}</span>
+          <span className='truncate text-xs'>{user?.email || ''}</span>
+        </div>
+      )}
+    </div>
+  );
+}

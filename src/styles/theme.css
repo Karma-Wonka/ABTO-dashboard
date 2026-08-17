@@ -1,0 +1,36 @@
+/* Import individual theme files */
+@import './themes/abto.css';
+@import './themes/claude.css';
+@import './themes/neobrutualism.css';
+@import './themes/supabase.css';
+@import './themes/vercel.css';
+@import './themes/mono.css';
+@import './themes/notebook.css';
+@import './themes/light-green.css';
+@import './themes/zen.css';
+@import './themes/astro-vista.css';
+@import './themes/whatsapp.css';
+
+body {
+  @apply overscroll-none;
+}
+
+:root {
+  --header-height: calc(var(--spacing, 0.25rem) * 12 + 1px);
+}
+
+/* Apply theme fonts to body for all themes */
+/* This ensures theme-specific fonts override Next.js font variables */
+/* Font variables are defined on [data-theme] (html element) */
+/* We need to override Next.js font variables on body to use html's values */
+/* Using initial removes the property, allowing parent (html) values to cascade */
+[data-theme] body {
+  /* Explicitly inherit from html's [data-theme] variables rather than using
+     whatever this element's own cascade would otherwise resolve to.
+     (`initial` would reset to the guaranteed-invalid value instead of
+     pulling html's value — inherit is what "cascade from html" means.) */
+  --font-sans: inherit;
+  --font-mono: inherit;
+  --font-serif: inherit;
+  font-family: var(--font-sans);
+}
