@@ -29,6 +29,7 @@ import {
   SliderField,
   FileUploadField,
   ImageUrlField,
+  PdfUrlField,
   FormTextField,
   FormTextareaField,
   FormSelectField,
@@ -37,7 +38,8 @@ import {
   FormRadioGroupField,
   FormSliderField,
   FormFileUploadField,
-  FormImageUrlField
+  FormImageUrlField,
+  FormPdfUrlField
 } from '@/components/forms/fields';
 import { cn } from '@/lib/utils';
 import {
@@ -152,7 +154,8 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
     RadioGroupField,
     SliderField,
     FileUploadField,
-    ImageUrlField
+    ImageUrlField,
+    PdfUrlField
   },
   formComponents: {
     // Layout & actions
@@ -173,7 +176,8 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
     RadioGroupField: FormRadioGroupField,
     SliderField: FormSliderField,
     FileUploadField: FormFileUploadField,
-    ImageUrlField: FormImageUrlField
+    ImageUrlField: FormImageUrlField,
+    PdfUrlField: FormPdfUrlField
   }
 });
 
@@ -208,7 +212,8 @@ function useFormFields<TValues extends Record<string, unknown>>() {
     FormRadioGroupField: FormRadioGroupField as unknown as Typed<typeof FormRadioGroupField>,
     FormSliderField: FormSliderField as unknown as Typed<typeof FormSliderField>,
     FormFileUploadField: FormFileUploadField as unknown as Typed<typeof FormFileUploadField>,
-    FormImageUrlField: FormImageUrlField as unknown as Typed<typeof FormImageUrlField>
+    FormImageUrlField: FormImageUrlField as unknown as Typed<typeof FormImageUrlField>,
+    FormPdfUrlField: FormPdfUrlField as unknown as Typed<typeof FormPdfUrlField>
   };
 }
 

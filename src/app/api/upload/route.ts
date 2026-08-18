@@ -3,13 +3,22 @@ import { requirePermission } from '@/lib/rbac';
 import { NextRequest, NextResponse } from 'next/server';
 
 const MAX_SIZE_BYTES = 8 * 1024 * 1024; // 8MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
+const ALLOWED_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/avif',
+  'application/pdf'
+];
 
-// Admin-only — uploads a single image to Vercel Blob and returns its public
+// Admin-only — uploads a single file to Vercel Blob and returns its public
 // URL. Used by the ImageUrlField form component (see
 // src/components/forms/fields/image-url-field.tsx) wherever an admin can
 // set an image on the public site (hero banners, committee photos,
-// destination photos, news hero images).
+// destination photos, news hero images), and by PdfUrlField (see
+// src/components/forms/fields/pdf-url-field.tsx) for uploaded PDFs like the
+// Event Calendar (src/features/documents).
 export async function POST(request: NextRequest) {
   const gate = await requirePermission('media:upload');
   if (!gate.ok)
@@ -22,7 +31,7 @@ export async function POST(request: NextRequest) {
   }
   if (!ALLOWED_TYPES.includes(file.type)) {
     return NextResponse.json(
-      { success: false, message: 'Unsupported file type. Use JPEG, PNG, WEBP, GIF, or AVIF.' },
+      { success: false, message: 'Unsupported file type. Use JPEG, PNG, WEBP, GIF, AVIF, or PDF.' },
       { status: 400 }
     );
   }

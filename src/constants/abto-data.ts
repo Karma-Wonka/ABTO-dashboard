@@ -467,20 +467,21 @@ export const newsStore = {
 
 export type Document = {
   id: number;
-  kind: 'download' | 'publication';
+  kind: 'download' | 'publication' | 'calendar';
   title: string;
   category: string | null;
   doc_type: string;
   size: string | null;
   year: string | null;
   description: string | null;
+  file_url: string | null;
   created_at: string;
   updated_at: string;
 };
 
 const RAW_DOWNLOADS: Omit<
   Document,
-  'id' | 'kind' | 'year' | 'description' | 'created_at' | 'updated_at'
+  'id' | 'kind' | 'year' | 'description' | 'created_at' | 'updated_at' | 'file_url'
 >[] = [
   {
     title: 'ABTO Membership Registration Form',
@@ -521,7 +522,7 @@ const RAW_DOWNLOADS: Omit<
 
 const RAW_PUBLICATIONS: Omit<
   Document,
-  'id' | 'kind' | 'category' | 'size' | 'created_at' | 'updated_at'
+  'id' | 'kind' | 'category' | 'size' | 'created_at' | 'updated_at' | 'file_url'
 >[] = [
   {
     title: 'Bhutan Tourism Monitor',
@@ -603,8 +604,8 @@ export const documentsStore = {
     await ensureSchema();
     const now = new Date().toISOString();
     const { rows } = await sql`
-      INSERT INTO documents (kind, title, category, doc_type, size, year, description, created_at, updated_at)
-      VALUES (${data.kind}, ${data.title}, ${data.category}, ${data.doc_type}, ${data.size}, ${data.year}, ${data.description}, ${now}, ${now})
+      INSERT INTO documents (kind, title, category, doc_type, size, year, description, file_url, created_at, updated_at)
+      VALUES (${data.kind}, ${data.title}, ${data.category}, ${data.doc_type}, ${data.size}, ${data.year}, ${data.description}, ${data.file_url}, ${now}, ${now})
       RETURNING *
     `;
     return rows[0] as Document;
@@ -616,7 +617,7 @@ export const documentsStore = {
     const updated_at = new Date().toISOString();
     await sql`
       UPDATE documents SET kind=${data.kind}, title=${data.title}, category=${data.category}, doc_type=${data.doc_type}, size=${data.size},
-      year=${data.year}, description=${data.description}, updated_at=${updated_at} WHERE id=${id}
+      year=${data.year}, description=${data.description}, file_url=${data.file_url}, updated_at=${updated_at} WHERE id=${id}
     `;
     return this.getById(id);
   },

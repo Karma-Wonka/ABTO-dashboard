@@ -7,7 +7,8 @@ export const documentSchema = z.object({
   doc_type: z.string().min(1, 'Please select a document type.'),
   size: z.string(),
   year: z.string(),
-  description: z.string()
+  description: z.string(),
+  file_url: z.string()
 });
 
 export type DocumentFormValues = {
@@ -18,11 +19,13 @@ export type DocumentFormValues = {
   size: string;
   year: string;
   description: string;
+  file_url: string;
 };
 
 export const KIND_OPTIONS = [
   { label: 'Download (form, template, asset)', value: 'download' },
-  { label: 'Publication (report, handbook)', value: 'publication' }
+  { label: 'Publication (report, handbook)', value: 'publication' },
+  { label: 'Event Calendar (PDF shown on the public Events page)', value: 'calendar' }
 ];
 
 export const DOC_TYPE_OPTIONS = [

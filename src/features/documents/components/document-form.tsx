@@ -52,18 +52,20 @@ export default function DocumentForm({
       doc_type: initialData?.doc_type ?? '',
       size: initialData?.size ?? '',
       year: initialData?.year ?? '',
-      description: initialData?.description ?? ''
+      description: initialData?.description ?? '',
+      file_url: initialData?.file_url ?? ''
     } as DocumentFormValues,
     validators: { onSubmit: documentSchema },
     onSubmit: ({ value }) => {
       const payload = {
-        kind: value.kind as 'download' | 'publication',
+        kind: value.kind as 'download' | 'publication' | 'calendar',
         title: value.title,
         category: value.category || null,
         doc_type: value.doc_type,
         size: value.size || null,
         year: value.year || null,
-        description: value.description || null
+        description: value.description || null,
+        file_url: value.file_url || null
       };
       if (isEdit) {
         updateMutation.mutate({ id: initialData.id, values: payload });
@@ -73,7 +75,8 @@ export default function DocumentForm({
     }
   });
 
-  const { FormTextField, FormSelectField, FormTextareaField } = useFormFields<DocumentFormValues>();
+  const { FormTextField, FormSelectField, FormTextareaField, FormPdfUrlField } =
+    useFormFields<DocumentFormValues>();
 
   return (
     <Card className='mx-auto w-full'>
@@ -133,6 +136,12 @@ export default function DocumentForm({
               placeholder='One line describing the publication (publications only)'
               maxLength={500}
               rows={3}
+            />
+
+            <FormPdfUrlField
+              name='file_url'
+              label='PDF File'
+              description='Upload a PDF or paste a URL. Required for Event Calendar so members have something to download.'
             />
 
             <div className='flex justify-end gap-2'>
