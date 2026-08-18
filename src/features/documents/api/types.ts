@@ -24,23 +24,21 @@ export type DocumentResponse = {
 };
 
 export type DocumentMutationPayload = {
-  kind: 'download' | 'publication' | 'calendar';
+  kind: 'download' | 'publication';
   title: string;
   category: string | null;
   doc_type: string;
   size: string | null;
   year: string | null;
   description: string | null;
-  file_url: string | null;
 };
 
 export const documentPayloadSchema = z.object({
-  kind: z.enum(['download', 'publication', 'calendar']),
+  kind: z.enum(['download', 'publication']),
   title: z.string().min(1),
   category: z.string().nullable(),
   doc_type: z.string().min(1),
   size: z.string().nullable(),
   year: z.string().nullable(),
-  description: z.string().nullable(),
-  file_url: z.string().nullable()
+  description: z.string().nullable()
 }) satisfies z.ZodType<DocumentMutationPayload>;

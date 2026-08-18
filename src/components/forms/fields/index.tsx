@@ -8,7 +8,6 @@ export { RadioGroupField } from './radio-group-field';
 export { SliderField } from './slider-field';
 export { FileUploadField } from './file-upload-field';
 export { ImageUrlField } from './image-url-field';
-export { PdfUrlField } from './pdf-url-field';
 
 // Composed (standalone, for direct use in forms)
 export { FormTextField } from './text-field';
@@ -20,4 +19,3 @@ export { FormRadioGroupField } from './radio-group-field';
 export { FormSliderField } from './slider-field';
 export { FormFileUploadField } from './file-upload-field';
 export { FormImageUrlField } from './image-url-field';
-export { FormPdfUrlField } from './pdf-url-field';

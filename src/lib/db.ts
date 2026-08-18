@@ -104,11 +104,6 @@ async function initSchema() {
     )
   `;
 
-  // Added after the initial documents table, for uploaded files (e.g. the
-  // Event Calendar PDF) — same ADD COLUMN IF NOT EXISTS safety as image_url
-  // above.
-  await sql`ALTER TABLE documents ADD COLUMN IF NOT EXISTS file_url TEXT`;
-
   // Editable copy for the public website (web/) — key/value so new
   // sections don't need a migration. `value` is JSONB: a scalar section
   // stores an object of fields, a list section stores an array of item

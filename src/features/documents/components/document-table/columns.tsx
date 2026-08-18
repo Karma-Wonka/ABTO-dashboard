@@ -9,8 +9,7 @@ import { deleteDocumentMutation } from '../../api/mutations';
 
 const KIND_OPTIONS = [
   { label: 'Download', value: 'download' },
-  { label: 'Publication', value: 'publication' },
-  { label: 'Calendar', value: 'calendar' }
+  { label: 'Publication', value: 'publication' }
 ];
 
 export const columns: ColumnDef<Document>[] = [
