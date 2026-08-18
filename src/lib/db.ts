@@ -104,6 +104,11 @@ async function initSchema() {
     )
   `;
 
+  // Cover image for publications (see src/app/api/documents/image/route.ts)
+  // — an R2 object key, not a URL, since the bucket is private; ../web
+  // resolves it to a signed link per request.
+  await sql`ALTER TABLE documents ADD COLUMN IF NOT EXISTS image_key TEXT`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS festivals (
       id SERIAL PRIMARY KEY,

@@ -31,6 +31,7 @@ export type DocumentMutationPayload = {
   size: string | null;
   year: string | null;
   description: string | null;
+  image_key: string | null;
 };
 
 export const documentPayloadSchema = z.object({
@@ -40,5 +41,6 @@ export const documentPayloadSchema = z.object({
   doc_type: z.string().min(1),
   size: z.string().nullable(),
   year: z.string().nullable(),
-  description: z.string().nullable()
+  description: z.string().nullable(),
+  image_key: z.string().nullable()
 }) satisfies z.ZodType<DocumentMutationPayload>;

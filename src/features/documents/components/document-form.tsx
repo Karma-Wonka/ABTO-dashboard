@@ -52,7 +52,8 @@ export default function DocumentForm({
       doc_type: initialData?.doc_type ?? '',
       size: initialData?.size ?? '',
       year: initialData?.year ?? '',
-      description: initialData?.description ?? ''
+      description: initialData?.description ?? '',
+      image_key: initialData?.image_key ?? ''
     } as DocumentFormValues,
     validators: { onSubmit: documentSchema },
     onSubmit: ({ value }) => {
@@ -63,7 +64,8 @@ export default function DocumentForm({
         doc_type: value.doc_type,
         size: value.size || null,
         year: value.year || null,
-        description: value.description || null
+        description: value.description || null,
+        image_key: value.image_key || null
       };
       if (isEdit) {
         updateMutation.mutate({ id: initialData.id, values: payload });
@@ -73,7 +75,8 @@ export default function DocumentForm({
     }
   });
 
-  const { FormTextField, FormSelectField, FormTextareaField } = useFormFields<DocumentFormValues>();
+  const { FormTextField, FormSelectField, FormTextareaField, FormDocumentImageField } =
+    useFormFields<DocumentFormValues>();
 
   return (
     <Card className='mx-auto w-full'>
@@ -133,6 +136,12 @@ export default function DocumentForm({
               placeholder='One line describing the publication (publications only)'
               maxLength={500}
               rows={3}
+            />
+
+            <FormDocumentImageField
+              name='image_key'
+              label='Cover Image'
+              description='Publications only. Shown at the top of the card on /publications.'
             />
 
             <div className='flex justify-end gap-2'>
