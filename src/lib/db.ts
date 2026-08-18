@@ -109,6 +109,12 @@ async function initSchema() {
   // resolves it to a signed link per request.
   await sql`ALTER TABLE documents ADD COLUMN IF NOT EXISTS image_key TEXT`;
 
+  // The actual downloadable file for a Download/Publication (see
+  // src/app/api/documents/file/route.ts) — an R2 object key under
+  // "Publication and Downloads/", same private-bucket + signed-link
+  // pattern as image_key above.
+  await sql`ALTER TABLE documents ADD COLUMN IF NOT EXISTS file_key TEXT`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS festivals (
       id SERIAL PRIMARY KEY,

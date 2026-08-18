@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, message: gate.message }, { status: gate.status });
 
   const key = request.nextUrl.searchParams.get('key');
-  if (!key || !key.startsWith('membership/')) {
+  if (!key || !key.startsWith('Members/')) {
     return NextResponse.json({ success: false, message: 'Invalid key.' }, { status: 400 });
   }
 

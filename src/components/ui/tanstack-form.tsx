@@ -30,6 +30,7 @@ import {
   FileUploadField,
   ImageUrlField,
   DocumentImageField,
+  DocumentFileField,
   FormTextField,
   FormTextareaField,
   FormSelectField,
@@ -39,7 +40,8 @@ import {
   FormSliderField,
   FormFileUploadField,
   FormImageUrlField,
-  FormDocumentImageField
+  FormDocumentImageField,
+  FormDocumentFileField
 } from '@/components/forms/fields';
 import { cn } from '@/lib/utils';
 import {
@@ -155,7 +157,8 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
     SliderField,
     FileUploadField,
     ImageUrlField,
-    DocumentImageField
+    DocumentImageField,
+    DocumentFileField
   },
   formComponents: {
     // Layout & actions
@@ -177,7 +180,8 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
     SliderField: FormSliderField,
     FileUploadField: FormFileUploadField,
     ImageUrlField: FormImageUrlField,
-    DocumentImageField: FormDocumentImageField
+    DocumentImageField: FormDocumentImageField,
+    DocumentFileField: FormDocumentFileField
   }
 });
 
@@ -215,7 +219,8 @@ function useFormFields<TValues extends Record<string, unknown>>() {
     FormImageUrlField: FormImageUrlField as unknown as Typed<typeof FormImageUrlField>,
     FormDocumentImageField: FormDocumentImageField as unknown as Typed<
       typeof FormDocumentImageField
-    >
+    >,
+    FormDocumentFileField: FormDocumentFileField as unknown as Typed<typeof FormDocumentFileField>
   };
 }
 

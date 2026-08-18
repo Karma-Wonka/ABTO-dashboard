@@ -475,13 +475,14 @@ export type Document = {
   year: string | null;
   description: string | null;
   image_key: string | null;
+  file_key: string | null;
   created_at: string;
   updated_at: string;
 };
 
 const RAW_DOWNLOADS: Omit<
   Document,
-  'id' | 'kind' | 'year' | 'description' | 'created_at' | 'updated_at' | 'image_key'
+  'id' | 'kind' | 'year' | 'description' | 'created_at' | 'updated_at' | 'image_key' | 'file_key'
 >[] = [
   {
     title: 'ABTO Membership Registration Form',
@@ -522,7 +523,7 @@ const RAW_DOWNLOADS: Omit<
 
 const RAW_PUBLICATIONS: Omit<
   Document,
-  'id' | 'kind' | 'category' | 'size' | 'created_at' | 'updated_at' | 'image_key'
+  'id' | 'kind' | 'category' | 'size' | 'created_at' | 'updated_at' | 'image_key' | 'file_key'
 >[] = [
   {
     title: 'Bhutan Tourism Monitor',
@@ -604,8 +605,8 @@ export const documentsStore = {
     await ensureSchema();
     const now = new Date().toISOString();
     const { rows } = await sql`
-      INSERT INTO documents (kind, title, category, doc_type, size, year, description, image_key, created_at, updated_at)
-      VALUES (${data.kind}, ${data.title}, ${data.category}, ${data.doc_type}, ${data.size}, ${data.year}, ${data.description}, ${data.image_key}, ${now}, ${now})
+      INSERT INTO documents (kind, title, category, doc_type, size, year, description, image_key, file_key, created_at, updated_at)
+      VALUES (${data.kind}, ${data.title}, ${data.category}, ${data.doc_type}, ${data.size}, ${data.year}, ${data.description}, ${data.image_key}, ${data.file_key}, ${now}, ${now})
       RETURNING *
     `;
     return rows[0] as Document;
@@ -617,7 +618,7 @@ export const documentsStore = {
     const updated_at = new Date().toISOString();
     await sql`
       UPDATE documents SET kind=${data.kind}, title=${data.title}, category=${data.category}, doc_type=${data.doc_type}, size=${data.size},
-      year=${data.year}, description=${data.description}, image_key=${data.image_key}, updated_at=${updated_at} WHERE id=${id}
+      year=${data.year}, description=${data.description}, image_key=${data.image_key}, file_key=${data.file_key}, updated_at=${updated_at} WHERE id=${id}
     `;
     return this.getById(id);
   },

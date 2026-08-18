@@ -9,6 +9,7 @@ export { SliderField } from './slider-field';
 export { FileUploadField } from './file-upload-field';
 export { ImageUrlField } from './image-url-field';
 export { DocumentImageField } from './document-image-field';
+export { DocumentFileField } from './document-file-field';
 
 // Composed (standalone, for direct use in forms)
 export { FormTextField } from './text-field';
@@ -21,3 +22,4 @@ export { FormSliderField } from './slider-field';
 export { FormFileUploadField } from './file-upload-field';
 export { FormImageUrlField } from './image-url-field';
 export { FormDocumentImageField } from './document-image-field';
+export { FormDocumentFileField } from './document-file-field';

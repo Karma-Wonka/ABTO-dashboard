@@ -8,7 +8,8 @@ export const documentSchema = z.object({
   size: z.string(),
   year: z.string(),
   description: z.string(),
-  image_key: z.string()
+  image_key: z.string(),
+  file_key: z.string()
 });
 
 export type DocumentFormValues = {
@@ -20,6 +21,7 @@ export type DocumentFormValues = {
   year: string;
   description: string;
   image_key: string;
+  file_key: string;
 };
 
 export const KIND_OPTIONS = [

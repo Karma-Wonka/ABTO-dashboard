@@ -53,7 +53,8 @@ export default function DocumentForm({
       size: initialData?.size ?? '',
       year: initialData?.year ?? '',
       description: initialData?.description ?? '',
-      image_key: initialData?.image_key ?? ''
+      image_key: initialData?.image_key ?? '',
+      file_key: initialData?.file_key ?? ''
     } as DocumentFormValues,
     validators: { onSubmit: documentSchema },
     onSubmit: ({ value }) => {
@@ -65,7 +66,8 @@ export default function DocumentForm({
         size: value.size || null,
         year: value.year || null,
         description: value.description || null,
-        image_key: value.image_key || null
+        image_key: value.image_key || null,
+        file_key: value.file_key || null
       };
       if (isEdit) {
         updateMutation.mutate({ id: initialData.id, values: payload });
@@ -75,8 +77,13 @@ export default function DocumentForm({
     }
   });
 
-  const { FormTextField, FormSelectField, FormTextareaField, FormDocumentImageField } =
-    useFormFields<DocumentFormValues>();
+  const {
+    FormTextField,
+    FormSelectField,
+    FormTextareaField,
+    FormDocumentImageField,
+    FormDocumentFileField
+  } = useFormFields<DocumentFormValues>();
 
   return (
     <Card className='mx-auto w-full'>
@@ -136,6 +143,12 @@ export default function DocumentForm({
               placeholder='One line describing the publication (publications only)'
               maxLength={500}
               rows={3}
+            />
+
+            <FormDocumentFileField
+              name='file_key'
+              label='File'
+              description='The actual file members download from /downloads or /publications.'
             />
 
             <FormDocumentImageField
