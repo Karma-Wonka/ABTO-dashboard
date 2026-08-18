@@ -69,6 +69,15 @@ export const navGroups: NavGroup[] = [
         items: []
       },
       {
+        title: 'Festivals',
+        url: '/dashboard/festivals',
+        icon: 'calendar',
+        shortcut: ['f', 't'],
+        isActive: false,
+        access: { permission: 'festivals:read' },
+        items: []
+      },
+      {
         title: 'Destinations',
         url: '/dashboard/destinations',
         icon: 'galleryVerticalEnd',

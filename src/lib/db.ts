@@ -104,6 +104,32 @@ async function initSchema() {
     )
   `;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS festivals (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      place TEXT NOT NULL,
+      dzongkhag TEXT NOT NULL,
+      date_2025 TEXT,
+      date_2026 TEXT,
+      display_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )
+  `;
+
+  // Single-row settings table for the signed Festival Calendar PDF (see
+  // src/features/festivals) — always the row with id=1, upserted rather
+  // than modeled as a list since there's only ever one current PDF.
+  await sql`
+    CREATE TABLE IF NOT EXISTS festival_calendar (
+      id INTEGER PRIMARY KEY DEFAULT 1,
+      pdf_url TEXT,
+      updated_at TEXT NOT NULL,
+      CONSTRAINT festival_calendar_singleton CHECK (id = 1)
+    )
+  `;
+
   // Editable copy for the public website (web/) — key/value so new
   // sections don't need a migration. `value` is JSONB: a scalar section
   // stores an object of fields, a list section stores an array of item

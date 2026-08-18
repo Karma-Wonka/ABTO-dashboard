@@ -206,6 +206,27 @@ const PERMISSIONS_SEED: Omit<Permission, 'id' | 'created_at'>[] = [
     action: 'upload',
     description: 'Upload images used on the public site',
     is_system: true
+  },
+  {
+    key: 'festivals:read',
+    resource: 'festivals',
+    action: 'read',
+    description: 'View the festival calendar',
+    is_system: true
+  },
+  {
+    key: 'festivals:write',
+    resource: 'festivals',
+    action: 'write',
+    description: 'Create and edit festival calendar entries, and upload the signed PDF',
+    is_system: true
+  },
+  {
+    key: 'festivals:delete',
+    resource: 'festivals',
+    action: 'delete',
+    description: 'Delete festival calendar entries',
+    is_system: true
   }
 ];
 
@@ -219,16 +240,70 @@ const MEMBER_ROLE_PERMISSIONS = [
   'news:read',
   'documents:read',
   'committee:read',
-  'destinations:read'
+  'destinations:read',
+  'festivals:read'
 ];
 
 let seeded: Promise<void> | undefined;
+
+// Keeps the permissions table (and Admin/Member's grants) in sync with
+// PERMISSIONS_SEED/MEMBER_ROLE_PERMISSIONS on every cold start — cheap
+// no-op ON CONFLICT DO NOTHING once everything already exists, same
+// "safe to re-run" idiom as ensureSchema(). This matters because the very
+// first run does a one-time bulk INSERT (below); any permission key added
+// to the source after that first run (e.g. a new entity's :read/:write/
+// :delete) would otherwise never reach an already-seeded database.
+async function backfillPermissions() {
+  const now = new Date().toISOString();
+  await transaction(async (client) => {
+    for (const p of PERMISSIONS_SEED) {
+      await client.query(
+        `INSERT INTO permissions (key, resource, action, description, is_system, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (key) DO NOTHING`,
+        [p.key, p.resource, p.action, p.description, p.is_system, now]
+      );
+    }
+
+    const { rows: adminRows } = await client.query<{ id: number }>(
+      `SELECT id FROM roles WHERE name = 'Admin'`
+    );
+    const { rows: memberRows } = await client.query<{ id: number }>(
+      `SELECT id FROM roles WHERE name = 'Member'`
+    );
+    const adminId = adminRows[0]?.id;
+    const memberId = memberRows[0]?.id;
+
+    if (adminId) {
+      for (const p of PERMISSIONS_SEED) {
+        await client.query(
+          `INSERT INTO role_permissions (role_id, permission_id)
+           SELECT $1, id FROM permissions WHERE key = $2
+           ON CONFLICT DO NOTHING`,
+          [adminId, p.key]
+        );
+      }
+    }
+    if (memberId) {
+      for (const key of MEMBER_ROLE_PERMISSIONS) {
+        await client.query(
+          `INSERT INTO role_permissions (role_id, permission_id)
+           SELECT $1, id FROM permissions WHERE key = $2
+           ON CONFLICT DO NOTHING`,
+          [memberId, key]
+        );
+      }
+    }
+  });
+}
 
 function seedIfEmpty() {
   if (!seeded) {
     seeded = (async () => {
       const { rows } = await query<{ count: string }>('SELECT COUNT(*) as count FROM permissions');
-      if (Number(rows[0].count) > 0) return;
+      if (Number(rows[0].count) > 0) {
+        await backfillPermissions();
+        return;
+      }
 
       const now = new Date().toISOString();
 

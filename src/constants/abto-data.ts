@@ -627,6 +627,228 @@ export const documentsStore = {
   }
 };
 
+// ---------- Festivals (Festival Calendar Manager) ----------
+
+export type Festival = {
+  id: number;
+  name: string;
+  place: string;
+  dzongkhag: string;
+  date_2025: string | null;
+  date_2026: string | null;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+// Same real tshechu/festival dates that used to be hardcoded into the
+// public site's data/site-data.ts — seeding here so the dashboard starts
+// already reflecting what's actually published, not demo filler.
+const RAW_FESTIVALS: Omit<Festival, 'id' | 'created_at' | 'updated_at' | 'display_order'>[] = [
+  {
+    name: 'Punakha Drubchen',
+    place: 'Punakha Dzong',
+    dzongkhag: 'Punakha',
+    date_2025: '05 – 07 Mar 2025',
+    date_2026: '22 – 24 Feb 2026'
+  },
+  {
+    name: 'Punakha Tshechu',
+    place: 'Punakha Dzong',
+    dzongkhag: 'Punakha',
+    date_2025: '08 – 10 Mar 2025',
+    date_2026: '25 – 27 Feb 2026'
+  },
+  {
+    name: 'Paro Tshechu',
+    place: 'Rinpung Dzong, Paro',
+    dzongkhag: 'Paro',
+    date_2025: '09 – 13 Apr 2025',
+    date_2026: '29 Mar – 02 Apr 2026'
+  },
+  {
+    name: 'Domkhar Tshechu',
+    place: 'Domkhar, Chumey',
+    dzongkhag: 'Bumthang',
+    date_2025: '08 – 10 Apr 2025',
+    date_2026: '28 – 30 Mar 2026'
+  },
+  {
+    name: 'Ura Yakchoe',
+    place: 'Ura Lhakhang',
+    dzongkhag: 'Bumthang',
+    date_2025: '11 – 15 Apr 2025',
+    date_2026: '31 Mar – 04 Apr 2026'
+  },
+  {
+    name: 'Nimalung Tshechu',
+    place: 'Nimalung Dratshang',
+    dzongkhag: 'Bumthang',
+    date_2025: '04 – 06 Jul 2025',
+    date_2026: '23 – 25 Jun 2026'
+  },
+  {
+    name: 'Kurjey Tshechu',
+    place: 'Kurjey Lhakhang',
+    dzongkhag: 'Bumthang',
+    date_2025: '06 Jul 2025',
+    date_2026: '25 Jun 2026'
+  },
+  {
+    name: 'Haa Summer Festival',
+    place: 'Haa Valley',
+    dzongkhag: 'Haa',
+    date_2025: '12 – 13 Jul 2025',
+    date_2026: '11 – 12 Jul 2026'
+  },
+  {
+    name: 'Wangdue Tshechu',
+    place: 'Tencholing Ground',
+    dzongkhag: 'Wangdue',
+    date_2025: '01 – 03 Oct 2025',
+    date_2026: '20 – 22 Sep 2026'
+  },
+  {
+    name: 'Thimphu Drubchen',
+    place: 'Tashichho Dzong',
+    dzongkhag: 'Thimphu',
+    date_2025: '01 Oct 2025',
+    date_2026: '20 Sep 2026'
+  },
+  {
+    name: 'Thimphu Tshechu',
+    place: 'Tashichho Dzong',
+    dzongkhag: 'Thimphu',
+    date_2025: '03 – 05 Oct 2025',
+    date_2026: '22 – 24 Sep 2026'
+  },
+  {
+    name: 'Gangtey Tshechu',
+    place: 'Gangtey Gonpa',
+    dzongkhag: 'Wangdue',
+    date_2025: '05 – 07 Oct 2025',
+    date_2026: '24 – 26 Sep 2026'
+  },
+  {
+    name: 'Jakar Tshechu',
+    place: 'Jakar Dzong',
+    dzongkhag: 'Bumthang',
+    date_2025: '01 – 05 Nov 2025',
+    date_2026: '21 – 25 Oct 2026'
+  },
+  {
+    name: 'Black-Necked Crane Festival',
+    place: 'Gangtey Gonpa, Phobjikha',
+    dzongkhag: 'Wangdue',
+    date_2025: '11 Nov 2025',
+    date_2026: '11 Nov 2026'
+  },
+  {
+    name: 'Mongar Tshechu',
+    place: 'Mongar Dzong',
+    dzongkhag: 'Mongar',
+    date_2025: '29 Nov – 02 Dec 2025',
+    date_2026: '18 – 21 Nov 2026'
+  },
+  {
+    name: 'Trashigang Tshechu',
+    place: 'Trashigang Dzong',
+    dzongkhag: 'Trashigang',
+    date_2025: '30 Nov – 03 Dec 2025',
+    date_2026: '19 – 22 Nov 2026'
+  },
+  {
+    name: 'Lhuentse Tshechu',
+    place: 'Lhuentse Dzong',
+    dzongkhag: 'Lhuentse',
+    date_2025: '28 – 30 Dec 2025',
+    date_2026: '17 – 19 Dec 2026'
+  },
+  {
+    name: 'Trongsa Tshechu',
+    place: 'Trongsa Dzong',
+    dzongkhag: 'Trongsa',
+    date_2025: '29 – 31 Dec 2025',
+    date_2026: '18 – 20 Dec 2026'
+  }
+];
+
+async function seedFestivalsIfEmpty() {
+  await ensureSchema();
+  const { rows } = await sql`SELECT COUNT(*)::int AS count FROM festivals`;
+  if (rows[0].count > 0) return;
+  const now = new Date().toISOString();
+  for (const [i, f] of RAW_FESTIVALS.entries()) {
+    await sql`
+      INSERT INTO festivals (name, place, dzongkhag, date_2025, date_2026, display_order, created_at, updated_at)
+      VALUES (${f.name}, ${f.place}, ${f.dzongkhag}, ${f.date_2025}, ${f.date_2026}, ${i}, ${now}, ${now})
+    `;
+  }
+}
+
+export type FestivalMutationPayload = Omit<Festival, 'id' | 'created_at' | 'updated_at'>;
+
+export const festivalsStore = {
+  async getAll({ search }: { search?: string } = {}) {
+    await seedFestivalsIfEmpty();
+    const { rows } = await sql`SELECT * FROM festivals ORDER BY display_order ASC, name ASC`;
+    let festivals = rows as Festival[];
+    if (search)
+      festivals = matchSorter(festivals, search, { keys: ['name', 'place', 'dzongkhag'] });
+    return festivals;
+  },
+  async getById(id: number) {
+    await seedFestivalsIfEmpty();
+    const { rows } = await sql`SELECT * FROM festivals WHERE id = ${id}`;
+    return rows[0] as Festival | undefined;
+  },
+  async create(data: FestivalMutationPayload) {
+    await ensureSchema();
+    const now = new Date().toISOString();
+    const { rows } = await sql`
+      INSERT INTO festivals (name, place, dzongkhag, date_2025, date_2026, display_order, created_at, updated_at)
+      VALUES (${data.name}, ${data.place}, ${data.dzongkhag}, ${data.date_2025}, ${data.date_2026}, ${data.display_order}, ${now}, ${now})
+      RETURNING *
+    `;
+    return rows[0] as Festival;
+  },
+  async update(id: number, data: FestivalMutationPayload) {
+    await ensureSchema();
+    const existing = await this.getById(id);
+    if (!existing) return undefined;
+    const updated_at = new Date().toISOString();
+    await sql`
+      UPDATE festivals SET name=${data.name}, place=${data.place}, dzongkhag=${data.dzongkhag},
+      date_2025=${data.date_2025}, date_2026=${data.date_2026}, display_order=${data.display_order},
+      updated_at=${updated_at} WHERE id=${id}
+    `;
+    return this.getById(id);
+  },
+  async remove(id: number) {
+    await ensureSchema();
+    const { rowCount } = await sql`DELETE FROM festivals WHERE id = ${id}`;
+    return (rowCount ?? 0) > 0;
+  }
+};
+
+// Single-row settings — the current signed Festival Calendar PDF.
+export const festivalCalendarStore = {
+  async get() {
+    await ensureSchema();
+    const { rows } = await sql`SELECT pdf_url, updated_at FROM festival_calendar WHERE id = 1`;
+    return (rows[0] as { pdf_url: string | null; updated_at: string } | undefined) ?? null;
+  },
+  async set(pdf_url: string | null) {
+    await ensureSchema();
+    const updated_at = new Date().toISOString();
+    await sql`
+      INSERT INTO festival_calendar (id, pdf_url, updated_at) VALUES (1, ${pdf_url}, ${updated_at})
+      ON CONFLICT (id) DO UPDATE SET pdf_url = ${pdf_url}, updated_at = ${updated_at}
+    `;
+    return { pdf_url, updated_at };
+  }
+};
+
 // ---------- Committee ----------
 
 export type CommitteeMember = {
