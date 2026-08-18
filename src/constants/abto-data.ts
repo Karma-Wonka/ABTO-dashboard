@@ -831,21 +831,23 @@ export const festivalsStore = {
   }
 };
 
-// Single-row settings — the current signed Festival Calendar PDF.
+// Single-row settings — the current signed Festival Calendar PDF. Stored as
+// an R2 object key (not a URL) — the bucket is private, so both this
+// dashboard and ../web resolve it to a short-lived signed URL per request.
 export const festivalCalendarStore = {
   async get() {
     await ensureSchema();
-    const { rows } = await sql`SELECT pdf_url, updated_at FROM festival_calendar WHERE id = 1`;
-    return (rows[0] as { pdf_url: string | null; updated_at: string } | undefined) ?? null;
+    const { rows } = await sql`SELECT pdf_key, updated_at FROM festival_calendar WHERE id = 1`;
+    return (rows[0] as { pdf_key: string | null; updated_at: string } | undefined) ?? null;
   },
-  async set(pdf_url: string | null) {
+  async set(pdf_key: string | null) {
     await ensureSchema();
     const updated_at = new Date().toISOString();
     await sql`
-      INSERT INTO festival_calendar (id, pdf_url, updated_at) VALUES (1, ${pdf_url}, ${updated_at})
-      ON CONFLICT (id) DO UPDATE SET pdf_url = ${pdf_url}, updated_at = ${updated_at}
+      INSERT INTO festival_calendar (id, pdf_key, updated_at) VALUES (1, ${pdf_key}, ${updated_at})
+      ON CONFLICT (id) DO UPDATE SET pdf_key = ${pdf_key}, updated_at = ${updated_at}
     `;
-    return { pdf_url, updated_at };
+    return { pdf_key, updated_at };
   }
 };
 

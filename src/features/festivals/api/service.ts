@@ -45,9 +45,18 @@ export async function getFestivalCalendarPdf(): Promise<FestivalCalendarPdfRespo
   return apiClient<FestivalCalendarPdfResponse>('/festivals/pdf');
 }
 
-export async function setFestivalCalendarPdf(pdf_url: string | null) {
-  return apiClient<FestivalCalendarPdfResponse & { message: string }>('/festivals/pdf', {
-    method: 'PUT',
-    body: JSON.stringify({ pdf_url })
-  });
+// Multipart upload — bypasses apiClient (which always sets
+// Content-Type: application/json) since the browser needs to set its own
+// multipart boundary.
+export async function uploadFestivalCalendarPdf(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch('/api/festivals/pdf', { method: 'POST', body: formData });
+  const data = (await res.json()) as FestivalCalendarPdfResponse & { message?: string };
+  if (!res.ok || !data.success) throw new Error(data.message ?? 'Upload failed');
+  return data;
+}
+
+export async function removeFestivalCalendarPdf() {
+  return apiClient<{ success: boolean; message: string }>('/festivals/pdf', { method: 'DELETE' });
 }

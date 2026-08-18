@@ -6,10 +6,13 @@ declare global {
   var __r2Client: S3Client | undefined;
 }
 
-// Cloudflare R2 — same bucket the public site (../web, lib/r2.ts) uploads
-// membership application documents into. This app only ever reads from it
-// (src/app/api/uploads/sign/route.ts issues short-lived presigned GET URLs
-// for the dashboard's Submissions viewer); it never writes.
+// Cloudflare R2 — same private bucket the public site (../web, lib/r2.ts)
+// uploads membership application documents into, under `membership/`. This
+// app also writes the signed Festival Calendar PDF here, under
+// `Festival Calender/` (src/app/api/festivals/pdf/route.ts). The bucket
+// stays private either way — every read (src/app/api/uploads/sign,
+// festivals/pdf's viewUrl, and ../web's own festival-calendar route) goes
+// through a short-lived presigned GET rather than a public object URL.
 export function getR2Client() {
   if (!global.__r2Client) {
     global.__r2Client = new S3Client({

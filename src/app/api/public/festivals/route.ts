@@ -8,7 +8,10 @@ export async function GET() {
     festivalCalendarStore.get()
   ]);
   return NextResponse.json(
-    { success: true, festivals, pdfUrl: calendar?.pdf_url ?? null },
+    // No URL/key here — the PDF lives in a private R2 bucket, so a signed
+    // link has to come from an authenticated member session (see ../web's
+    // own /api/festival-calendar route), not this public endpoint.
+    { success: true, festivals, hasCalendarPdf: !!calendar?.pdf_key },
     {
       headers: {
         'Access-Control-Allow-Origin': '*',

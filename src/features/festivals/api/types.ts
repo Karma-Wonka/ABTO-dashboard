@@ -23,7 +23,11 @@ export type FestivalMutationPayload = {
   display_order: number;
 };
 
-export type FestivalCalendarPdf = { pdf_url: string | null; updated_at: string | null };
+export type FestivalCalendarPdf = {
+  pdf_key: string | null;
+  updated_at: string | null;
+  viewUrl: string | null;
+};
 
 export type FestivalCalendarPdfResponse = {
   success: boolean;

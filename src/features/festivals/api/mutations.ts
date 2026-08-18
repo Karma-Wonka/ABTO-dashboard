@@ -1,6 +1,12 @@
 import { mutationOptions } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/query-client';
-import { createFestival, updateFestival, deleteFestival, setFestivalCalendarPdf } from './service';
+import {
+  createFestival,
+  updateFestival,
+  deleteFestival,
+  uploadFestivalCalendarPdf,
+  removeFestivalCalendarPdf
+} from './service';
 import { festivalKeys } from './queries';
 import type { FestivalMutationPayload } from './types';
 
@@ -20,7 +26,12 @@ export const deleteFestivalMutation = mutationOptions({
   onSuccess: () => getQueryClient().invalidateQueries({ queryKey: festivalKeys.all })
 });
 
-export const setFestivalCalendarPdfMutation = mutationOptions({
-  mutationFn: (pdf_url: string | null) => setFestivalCalendarPdf(pdf_url),
+export const uploadFestivalCalendarPdfMutation = mutationOptions({
+  mutationFn: (file: File) => uploadFestivalCalendarPdf(file),
+  onSuccess: () => getQueryClient().invalidateQueries({ queryKey: festivalKeys.pdf() })
+});
+
+export const removeFestivalCalendarPdfMutation = mutationOptions({
+  mutationFn: () => removeFestivalCalendarPdf(),
   onSuccess: () => getQueryClient().invalidateQueries({ queryKey: festivalKeys.pdf() })
 });

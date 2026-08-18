@@ -130,6 +130,12 @@ async function initSchema() {
     )
   `;
 
+  // pdf_key: the R2 object key (bucket stays private — see src/lib/r2.ts —
+  // so both this dashboard and ../web resolve it to a short-lived signed
+  // URL on each request rather than storing a permanent public link).
+  // pdf_url is legacy/unused now but kept for schema compatibility.
+  await sql`ALTER TABLE festival_calendar ADD COLUMN IF NOT EXISTS pdf_key TEXT`;
+
   // Editable copy for the public website (web/) — key/value so new
   // sections don't need a migration. `value` is JSONB: a scalar section
   // stores an object of fields, a list section stores an array of item
