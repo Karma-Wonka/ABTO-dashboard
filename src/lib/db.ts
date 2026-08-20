@@ -208,6 +208,23 @@ async function initSchema() {
     )
   `;
 
+  // Admin-facing alerts — created whenever something from the public site
+  // needs attention (currently: every new submission, both here via
+  // submissionsStore.create and directly by ../web's own /api/membership
+  // route, which writes to this same shared database). Not per-user —
+  // this small team shares one inbox, so "read" is global.
+  await sql`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT,
+      link TEXT,
+      is_read BOOLEAN NOT NULL DEFAULT false,
+      created_at TEXT NOT NULL
+    )
+  `;
+
   // Roles & permissions ---------------------------------------------------
   // Dynamic RBAC: roles are rows an admin can create/edit/delete, each with
   // a set of permission keys attached (src/constants/rbac-data.ts).

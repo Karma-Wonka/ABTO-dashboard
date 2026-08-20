@@ -129,7 +129,8 @@ export const navGroups: NavGroup[] = [
             title: 'Notifications',
             url: '/dashboard/notifications',
             icon: 'notification',
-            shortcut: ['n', 'n']
+            shortcut: ['n', 'n'],
+            access: { permission: 'submissions:read' }
           }
         ]
       }

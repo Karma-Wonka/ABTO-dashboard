@@ -7,17 +7,27 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { NotificationCard } from '@/components/ui/notification-card';
-import { useNotificationStore } from '../utils/store';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { notificationsQueryOptions } from '../api/queries';
+import { markNotificationReadMutation, markAllNotificationsReadMutation } from '../api/mutations';
+import { useRole } from '@/hooks/use-role';
 import { useRouter } from 'next/navigation';
 
 const MAX_VISIBLE = 5;
 
-const actionRoutes: Record<string, string> = {};
-
 export function NotificationCenter() {
-  const { notifications, markAsRead, markAllAsRead, unreadCount } = useNotificationStore();
+  const { can, isLoading: roleLoading } = useRole();
+  const enabled = !roleLoading && can('submissions:read');
+  const { data } = useQuery({ ...notificationsQueryOptions(), enabled });
   const router = useRouter();
-  const count = unreadCount();
+
+  const markReadMutation = useMutation(markNotificationReadMutation);
+  const markAllReadMutation = useMutation(markAllNotificationsReadMutation);
+
+  if (!enabled) return null;
+
+  const notifications = data?.notifications ?? [];
+  const count = data?.unreadCount ?? 0;
   const visibleNotifications = notifications.slice(0, MAX_VISIBLE);
 
   return (
@@ -48,7 +58,7 @@ export function NotificationCenter() {
                 variant='ghost'
                 size='sm'
                 className='text-muted-foreground h-auto px-2 py-1 text-xs'
-                onClick={markAllAsRead}
+                onClick={() => markAllReadMutation.mutate()}
               >
                 Mark all as read
               </Button>
@@ -67,19 +77,20 @@ export function NotificationCenter() {
               {visibleNotifications.map((notification) => (
                 <NotificationCard
                   key={notification.id}
-                  id={notification.id}
+                  id={String(notification.id)}
                   title={notification.title}
-                  body={notification.body}
-                  status={notification.status}
-                  createdAt={notification.createdAt}
-                  actions={notification.actions}
-                  onMarkAsRead={markAsRead}
-                  onAction={(notifId, actionId) => {
-                    const route = actionRoutes[actionId];
-                    if (route) {
-                      markAsRead(notifId);
-                      router.push(route);
-                    }
+                  body={notification.body ?? ''}
+                  status={notification.is_read ? 'read' : 'unread'}
+                  createdAt={notification.created_at}
+                  actions={
+                    notification.link
+                      ? [{ id: 'view', label: 'View', type: 'redirect', style: 'primary' }]
+                      : []
+                  }
+                  onMarkAsRead={(id) => markReadMutation.mutate(Number(id))}
+                  onAction={(notifId) => {
+                    markReadMutation.mutate(Number(notifId));
+                    if (notification.link) router.push(notification.link);
                   }}
                 />
               ))}

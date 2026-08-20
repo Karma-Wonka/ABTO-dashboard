@@ -1164,11 +1164,78 @@ export const submissionsStore = {
       VALUES (${data.kind}, ${data.name}, ${data.email}, ${data.phone}, ${data.company}, ${data.message}, ${JSON.stringify(data.payload)}::jsonb, ${now})
       RETURNING *
     `;
-    return rows[0] as Submission;
+    const submission = rows[0] as Submission;
+    await notificationsStore.create({
+      type: 'submission',
+      title:
+        submission.kind === 'membership'
+          ? `New membership application: ${submission.company ?? submission.name}`
+          : `New contact message from ${submission.name}`,
+      body: submission.message,
+      link: '/dashboard/submissions'
+    });
+    return submission;
   },
   async remove(id: number) {
     await ensureSchema();
     const { rowCount } = await sql`DELETE FROM submissions WHERE id = ${id}`;
     return (rowCount ?? 0) > 0;
+  }
+};
+
+// ---------- Notifications ----------
+// Admin-facing alerts for things needing attention (currently: new
+// submissions — see submissionsStore.create above, and ../web's own
+// /api/membership route, which inserts here directly since it writes to
+// `submissions` without going through this store). Shared/global read
+// state, not per-user — see the notifications table's comment in db.ts.
+
+export type Notification = {
+  id: number;
+  type: string;
+  title: string;
+  body: string | null;
+  link: string | null;
+  is_read: boolean;
+  created_at: string;
+};
+
+export type NotificationCreatePayload = {
+  type: string;
+  title: string;
+  body?: string | null;
+  link?: string | null;
+};
+
+export const notificationsStore = {
+  async getAll() {
+    await ensureSchema();
+    const { rows } = await sql`SELECT * FROM notifications ORDER BY created_at DESC LIMIT 50`;
+    return rows as Notification[];
+  },
+  async getUnreadCount() {
+    await ensureSchema();
+    const { rows } =
+      await sql`SELECT COUNT(*)::int AS count FROM notifications WHERE is_read = false`;
+    return rows[0].count as number;
+  },
+  async create(data: NotificationCreatePayload) {
+    await ensureSchema();
+    const now = new Date().toISOString();
+    const { rows } = await sql`
+      INSERT INTO notifications (type, title, body, link, created_at)
+      VALUES (${data.type}, ${data.title}, ${data.body ?? null}, ${data.link ?? null}, ${now})
+      RETURNING *
+    `;
+    return rows[0] as Notification;
+  },
+  async markRead(id: number) {
+    await ensureSchema();
+    const { rowCount } = await sql`UPDATE notifications SET is_read = true WHERE id = ${id}`;
+    return (rowCount ?? 0) > 0;
+  },
+  async markAllRead() {
+    await ensureSchema();
+    await sql`UPDATE notifications SET is_read = true WHERE is_read = false`;
   }
 };

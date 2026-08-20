@@ -6,19 +6,26 @@ import { Button } from '@/components/ui/button';
 import { NotificationCard } from '@/components/ui/notification-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
-import { useNotificationStore } from '../utils/store';
-
-const actionRoutes: Record<string, string> = {};
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { notificationsQueryOptions } from '../api/queries';
+import { markNotificationReadMutation, markAllNotificationsReadMutation } from '../api/mutations';
+import type { Notification } from '../api/types';
 
 export default function NotificationsPage() {
-  const { notifications, markAsRead, markAllAsRead, unreadCount } = useNotificationStore();
+  const { data, isLoading } = useQuery(notificationsQueryOptions());
   const router = useRouter();
-  const count = unreadCount();
+  const markReadMutation = useMutation(markNotificationReadMutation);
+  const markAllReadMutation = useMutation(markAllNotificationsReadMutation);
 
-  const unreadNotifications = notifications.filter((n) => n.status === 'unread');
-  const readNotifications = notifications.filter((n) => n.status === 'read');
+  const notifications = data?.notifications ?? [];
+  const count = data?.unreadCount ?? 0;
+  const unreadNotifications = notifications.filter((n) => !n.is_read);
+  const readNotifications = notifications.filter((n) => n.is_read);
 
-  const renderList = (items: typeof notifications) => {
+  const renderList = (items: Notification[]) => {
+    if (isLoading) {
+      return <p className='text-muted-foreground py-16 text-center text-sm'>Loading…</p>;
+    }
     if (items.length === 0) {
       return (
         <div className='flex flex-col items-center justify-center py-16'>
@@ -33,19 +40,20 @@ export default function NotificationsPage() {
         {items.map((notification) => (
           <NotificationCard
             key={notification.id}
-            id={notification.id}
+            id={String(notification.id)}
             title={notification.title}
-            body={notification.body}
-            status={notification.status}
-            createdAt={notification.createdAt}
-            actions={notification.actions}
-            onMarkAsRead={markAsRead}
-            onAction={(notifId, actionId) => {
-              const route = actionRoutes[actionId];
-              if (route) {
-                markAsRead(notifId);
-                router.push(route);
-              }
+            body={notification.body ?? ''}
+            status={notification.is_read ? 'read' : 'unread'}
+            createdAt={notification.created_at}
+            actions={
+              notification.link
+                ? [{ id: 'view', label: 'View', type: 'redirect', style: 'primary' as const }]
+                : []
+            }
+            onMarkAsRead={(id) => markReadMutation.mutate(Number(id))}
+            onAction={() => {
+              markReadMutation.mutate(notification.id);
+              if (notification.link) router.push(notification.link);
             }}
           />
         ))}
@@ -59,7 +67,7 @@ export default function NotificationsPage() {
       pageDescription='View and manage all your notifications.'
       pageHeaderAction={
         count > 0 ? (
-          <Button variant='outline' size='sm' onClick={markAllAsRead}>
+          <Button variant='outline' size='sm' onClick={() => markAllReadMutation.mutate()}>
             Mark all as read
           </Button>
         ) : undefined
