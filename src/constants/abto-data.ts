@@ -34,11 +34,20 @@ type MemberRow = Omit<Member, 'specialties' | 'languages'> & {
   languages: string;
 };
 
+function parseStringArray(value: string): string[] {
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 function rowToMember(row: MemberRow): Member {
   return {
     ...row,
-    specialties: JSON.parse(row.specialties),
-    languages: JSON.parse(row.languages)
+    specialties: parseStringArray(row.specialties),
+    languages: parseStringArray(row.languages)
   };
 }
 

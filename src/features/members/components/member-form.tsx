@@ -56,8 +56,8 @@ export default function MemberForm({
       email: initialData?.email ?? '',
       website: initialData?.website ?? '',
       description: initialData?.description ?? '',
-      specialties: initialData?.specialties.join(', ') ?? '',
-      languages: initialData?.languages.join(', ') ?? 'English',
+      specialties: initialData?.specialties?.join(', ') ?? '',
+      languages: initialData?.languages?.join(', ') ?? 'English',
       member_since: initialData?.member_since,
       status: initialData?.status ?? 'active'
     } as MemberFormValues,
