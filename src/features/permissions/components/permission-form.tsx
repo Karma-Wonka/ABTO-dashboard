@@ -24,7 +24,8 @@ export default function PermissionForm({
 
   const createMutation = useMutation({
     ...createPermissionMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      createPermissionMutation.onSuccess?.(...args);
       toast.success('Permission created');
       router.push('/dashboard/permissions');
     },
@@ -34,7 +35,8 @@ export default function PermissionForm({
 
   const updateMutation = useMutation({
     ...updatePermissionMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      updatePermissionMutation.onSuccess?.(...args);
       toast.success('Permission updated');
       router.push('/dashboard/permissions');
     },

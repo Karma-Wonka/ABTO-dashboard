@@ -28,7 +28,8 @@ export default function EventForm({
 
   const createMutation = useMutation({
     ...createEventMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      createEventMutation.onSuccess?.(...args);
       toast.success('Event created');
       router.push('/dashboard/events');
     },
@@ -37,7 +38,8 @@ export default function EventForm({
 
   const updateMutation = useMutation({
     ...updateEventMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      updateEventMutation.onSuccess?.(...args);
       toast.success('Event updated');
       router.push('/dashboard/events');
     },

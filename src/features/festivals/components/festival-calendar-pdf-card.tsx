@@ -23,14 +23,19 @@ export function FestivalCalendarPdfCard() {
 
   const uploadMutation = useMutation({
     ...uploadFestivalCalendarPdfMutation,
-    onSuccess: () =>
-      toast.success('Signed calendar PDF updated — live on the site within a minute'),
+    onSuccess: (...args) => {
+      uploadFestivalCalendarPdfMutation.onSuccess?.(...args);
+      toast.success('Signed calendar PDF updated — live on the site within a minute');
+    },
     onError: (err) => toast.error(err instanceof Error ? err.message : 'Failed to upload the PDF')
   });
 
   const removeMutation = useMutation({
     ...removeFestivalCalendarPdfMutation,
-    onSuccess: () => toast.success('Signed calendar PDF removed'),
+    onSuccess: (...args) => {
+      removeFestivalCalendarPdfMutation.onSuccess?.(...args);
+      toast.success('Signed calendar PDF removed');
+    },
     onError: () => toast.error('Failed to remove the calendar PDF')
   });
 

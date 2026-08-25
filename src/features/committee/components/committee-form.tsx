@@ -23,7 +23,8 @@ export default function CommitteeForm({
 
   const createMutation = useMutation({
     ...createCommitteeMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      createCommitteeMutation.onSuccess?.(...args);
       toast.success('Committee seat created');
       router.push('/dashboard/committee');
     },
@@ -32,7 +33,8 @@ export default function CommitteeForm({
 
   const updateMutation = useMutation({
     ...updateCommitteeMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      updateCommitteeMutation.onSuccess?.(...args);
       toast.success('Committee seat updated');
       router.push('/dashboard/committee');
     },

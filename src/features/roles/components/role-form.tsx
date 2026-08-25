@@ -32,7 +32,8 @@ export default function RoleForm({
 
   const createMutation = useMutation({
     ...createRoleMutation,
-    onSuccess: (data) => {
+    onSuccess: (data, ...rest) => {
+      createRoleMutation.onSuccess?.(data, ...rest);
       toast.success('Role created');
       router.push(`/dashboard/roles/${data.role.id}`);
     },
@@ -41,7 +42,10 @@ export default function RoleForm({
 
   const updateMutation = useMutation({
     ...updateRoleMutation,
-    onSuccess: () => toast.success('Role updated'),
+    onSuccess: (...args) => {
+      updateRoleMutation.onSuccess?.(...args);
+      toast.success('Role updated');
+    },
     onError: (err) => toast.error(err instanceof Error ? err.message : 'Failed to update role')
   });
 
@@ -114,7 +118,10 @@ function RolePermissionsEditor({ role }: { role: Role }) {
 
   const mutation = useMutation({
     ...setRolePermissionsMutation,
-    onSuccess: () => toast.success('Permissions updated'),
+    onSuccess: (...args) => {
+      setRolePermissionsMutation.onSuccess?.(...args);
+      toast.success('Permissions updated');
+    },
     onError: () => toast.error('Failed to update permissions')
   });
 

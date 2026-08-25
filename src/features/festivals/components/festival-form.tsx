@@ -23,7 +23,8 @@ export default function FestivalForm({
 
   const createMutation = useMutation({
     ...createFestivalMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      createFestivalMutation.onSuccess?.(...args);
       toast.success('Festival added');
       router.push('/dashboard/festivals');
     },
@@ -32,7 +33,8 @@ export default function FestivalForm({
 
   const updateMutation = useMutation({
     ...updateFestivalMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      updateFestivalMutation.onSuccess?.(...args);
       toast.success('Festival updated');
       router.push('/dashboard/festivals');
     },

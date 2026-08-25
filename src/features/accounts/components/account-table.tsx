@@ -40,13 +40,17 @@ export function AccountTable() {
 
   const roleMutation = useMutation({
     ...updateAccountRoleMutation,
-    onSuccess: () => toast.success('Role updated'),
+    onSuccess: (...args) => {
+      updateAccountRoleMutation.onSuccess?.(...args);
+      toast.success('Role updated');
+    },
     onError: (err) => toast.error(err instanceof Error ? err.message : 'Failed to update role')
   });
 
   const deleteMutation = useMutation({
     ...deleteAccountMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      deleteAccountMutation.onSuccess?.(...args);
       toast.success('Account deleted');
       setPendingDelete(null);
     },

@@ -34,7 +34,8 @@ export function PermissionTable() {
 
   const deleteMutation = useMutation({
     ...deletePermissionMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      deletePermissionMutation.onSuccess?.(...args);
       toast.success('Permission deleted');
       setPendingDelete(null);
     },

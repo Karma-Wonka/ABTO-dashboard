@@ -35,7 +35,10 @@ export function ListSectionForm({
 }) {
   const updateMutation = useMutation({
     ...updateSiteContentMutation,
-    onSuccess: () => toast.success(`${title} updated — live on the site within a minute`),
+    onSuccess: (...args) => {
+      updateSiteContentMutation.onSuccess?.(...args);
+      toast.success(`${title} updated — live on the site within a minute`);
+    },
     onError: () => toast.error(`Failed to update ${title}`)
   });
 

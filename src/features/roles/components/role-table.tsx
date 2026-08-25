@@ -34,7 +34,8 @@ export function RoleTable() {
 
   const deleteMutation = useMutation({
     ...deleteRoleMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      deleteRoleMutation.onSuccess?.(...args);
       toast.success('Role deleted');
       setPendingDelete(null);
     },

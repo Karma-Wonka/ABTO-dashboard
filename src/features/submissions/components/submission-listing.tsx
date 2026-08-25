@@ -49,7 +49,8 @@ export function SubmissionTable() {
 
   const deleteMutation = useMutation({
     ...deleteSubmissionMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      deleteSubmissionMutation.onSuccess?.(...args);
       toast.success('Submission deleted');
       setPendingDelete(null);
     },

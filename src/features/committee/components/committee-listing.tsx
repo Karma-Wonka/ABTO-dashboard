@@ -29,7 +29,8 @@ export function CommitteeTable() {
 
   const deleteMutation = useMutation({
     ...deleteCommitteeMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      deleteCommitteeMutation.onSuccess?.(...args);
       toast.success('Committee member deleted');
       setPendingDelete(null);
     },

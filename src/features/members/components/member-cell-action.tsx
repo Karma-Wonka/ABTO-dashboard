@@ -35,7 +35,8 @@ export function MemberCellAction({
 
   const deleteMutation = useMutation({
     ...deleteMemberMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      deleteMemberMutation.onSuccess?.(...args);
       toast.success('Member deleted');
       setOpen(false);
     },

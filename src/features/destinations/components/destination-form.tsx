@@ -27,7 +27,8 @@ export default function DestinationForm({
 
   const createMutation = useMutation({
     ...createDestinationMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      createDestinationMutation.onSuccess?.(...args);
       toast.success('Destination created');
       router.push('/dashboard/destinations');
     },
@@ -36,7 +37,8 @@ export default function DestinationForm({
 
   const updateMutation = useMutation({
     ...updateDestinationMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      updateDestinationMutation.onSuccess?.(...args);
       toast.success('Destination updated');
       router.push('/dashboard/destinations');
     },

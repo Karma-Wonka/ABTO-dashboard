@@ -23,7 +23,8 @@ export default function NewsForm({
 
   const createMutation = useMutation({
     ...createNewsMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      createNewsMutation.onSuccess?.(...args);
       toast.success('News post created');
       router.push('/dashboard/news');
     },
@@ -32,7 +33,8 @@ export default function NewsForm({
 
   const updateMutation = useMutation({
     ...updateNewsMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      updateNewsMutation.onSuccess?.(...args);
       toast.success('News post updated');
       router.push('/dashboard/news');
     },

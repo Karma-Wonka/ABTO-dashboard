@@ -37,7 +37,8 @@ export function UserFormSheet({ user, open, onOpenChange }: UserFormSheetProps) 
 
   const createMutation = useMutation({
     ...createUserMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      createUserMutation.onSuccess?.(...args);
       toast.success('User created successfully');
       onOpenChange(false);
       form.reset();
@@ -47,7 +48,8 @@ export function UserFormSheet({ user, open, onOpenChange }: UserFormSheetProps) 
 
   const updateMutation = useMutation({
     ...updateUserMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      updateUserMutation.onSuccess?.(...args);
       toast.success('User updated successfully');
       onOpenChange(false);
     },

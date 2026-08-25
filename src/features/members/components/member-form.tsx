@@ -31,7 +31,8 @@ export default function MemberForm({
 
   const createMutation = useMutation({
     ...createMemberMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      createMemberMutation.onSuccess?.(...args);
       toast.success('Member created');
       router.push('/dashboard/members');
     },
@@ -40,7 +41,8 @@ export default function MemberForm({
 
   const updateMutation = useMutation({
     ...updateMemberMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      updateMemberMutation.onSuccess?.(...args);
       toast.success('Member updated');
       router.push('/dashboard/members');
     },

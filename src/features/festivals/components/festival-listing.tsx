@@ -29,7 +29,8 @@ export function FestivalTable() {
 
   const deleteMutation = useMutation({
     ...deleteFestivalMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      deleteFestivalMutation.onSuccess?.(...args);
       toast.success('Festival deleted');
       setPendingDelete(null);
     },

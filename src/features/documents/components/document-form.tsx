@@ -28,7 +28,8 @@ export default function DocumentForm({
 
   const createMutation = useMutation({
     ...createDocumentMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      createDocumentMutation.onSuccess?.(...args);
       toast.success('Document created');
       router.push('/dashboard/documents');
     },
@@ -37,7 +38,8 @@ export default function DocumentForm({
 
   const updateMutation = useMutation({
     ...updateDocumentMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      updateDocumentMutation.onSuccess?.(...args);
       toast.success('Document updated');
       router.push('/dashboard/documents');
     },

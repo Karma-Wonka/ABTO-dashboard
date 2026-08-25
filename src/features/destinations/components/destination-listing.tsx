@@ -35,7 +35,8 @@ export function DestinationTable() {
 
   const deleteMutation = useMutation({
     ...deleteDestinationMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      deleteDestinationMutation.onSuccess?.(...args);
       toast.success('Destination deleted');
       setPendingDelete(null);
     },

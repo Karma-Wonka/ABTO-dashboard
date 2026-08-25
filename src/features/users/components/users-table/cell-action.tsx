@@ -27,7 +27,8 @@ export function CellAction({ data }: CellActionProps) {
 
   const deleteMutation = useMutation({
     ...deleteUserMutation,
-    onSuccess: () => {
+    onSuccess: (...args) => {
+      deleteUserMutation.onSuccess?.(...args);
       toast.success('User deleted successfully');
       setDeleteOpen(false);
     },
