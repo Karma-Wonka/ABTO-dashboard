@@ -8,7 +8,7 @@ import {
   removeFestivalCalendarPdf
 } from './service';
 import { festivalKeys } from './queries';
-import type { FestivalMutationPayload } from './types';
+import type { FestivalMutationPayload, FestivalCalendarSlotName } from './types';
 
 export const createFestivalMutation = mutationOptions({
   mutationFn: (data: FestivalMutationPayload) => createFestival(data),
@@ -27,11 +27,12 @@ export const deleteFestivalMutation = mutationOptions({
 });
 
 export const uploadFestivalCalendarPdfMutation = mutationOptions({
-  mutationFn: (file: File) => uploadFestivalCalendarPdf(file),
+  mutationFn: ({ file, slot }: { file: File; slot: FestivalCalendarSlotName }) =>
+    uploadFestivalCalendarPdf(file, slot),
   onSuccess: () => getQueryClient().invalidateQueries({ queryKey: festivalKeys.pdf() })
 });
 
 export const removeFestivalCalendarPdfMutation = mutationOptions({
-  mutationFn: () => removeFestivalCalendarPdf(),
+  mutationFn: (slot: FestivalCalendarSlotName) => removeFestivalCalendarPdf(slot),
   onSuccess: () => getQueryClient().invalidateQueries({ queryKey: festivalKeys.pdf() })
 });

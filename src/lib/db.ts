@@ -147,6 +147,12 @@ async function initSchema() {
   // pdf_url is legacy/unused now but kept for schema compatibility.
   await sql`ALTER TABLE festival_calendar ADD COLUMN IF NOT EXISTS pdf_key TEXT`;
 
+  // Second slot for the "next year" calendar PDF — still the single
+  // singleton row (id=1), just a second pair of columns, since the table's
+  // CHECK constraint only ever allows one row.
+  await sql`ALTER TABLE festival_calendar ADD COLUMN IF NOT EXISTS pdf_key_2 TEXT`;
+  await sql`ALTER TABLE festival_calendar ADD COLUMN IF NOT EXISTS updated_at_2 TEXT`;
+
   // Editable copy for the public website (web/) — key/value so new
   // sections don't need a migration. `value` is JSONB: a scalar section
   // stores an object of fields, a list section stores an array of item

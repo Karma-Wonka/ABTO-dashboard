@@ -11,7 +11,12 @@ export async function GET() {
     // No URL/key here — the PDF lives in a private R2 bucket, so a signed
     // link has to come from an authenticated member session (see ../web's
     // own /api/festival-calendar route), not this public endpoint.
-    { success: true, festivals, hasCalendarPdf: !!calendar?.pdf_key },
+    {
+      success: true,
+      festivals,
+      hasCalendarPdf: !!calendar?.pdf_key,
+      hasCalendarPdfNextYear: !!calendar?.pdf_key_2
+    },
     {
       headers: {
         'Access-Control-Allow-Origin': '*',

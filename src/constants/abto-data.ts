@@ -842,22 +842,43 @@ export const festivalsStore = {
   }
 };
 
-// Single-row settings — the current signed Festival Calendar PDF. Stored as
-// an R2 object key (not a URL) — the bucket is private, so both this
-// dashboard and ../web resolve it to a short-lived signed URL per request.
+export type FestivalCalendarSlot = 1 | 2;
+
+// Single-row settings — the signed Festival Calendar PDFs, one for the
+// current year and one for the next year (slots 1 and 2). Stored as R2
+// object keys (not URLs) — the bucket is private, so both this dashboard
+// and ../web resolve them to short-lived signed URLs per request.
 export const festivalCalendarStore = {
   async get() {
     await ensureSchema();
-    const { rows } = await sql`SELECT pdf_key, updated_at FROM festival_calendar WHERE id = 1`;
-    return (rows[0] as { pdf_key: string | null; updated_at: string } | undefined) ?? null;
+    const { rows } = await sql`
+      SELECT pdf_key, updated_at, pdf_key_2, updated_at_2 FROM festival_calendar WHERE id = 1
+    `;
+    return (
+      (rows[0] as
+        | {
+            pdf_key: string | null;
+            updated_at: string | null;
+            pdf_key_2: string | null;
+            updated_at_2: string | null;
+          }
+        | undefined) ?? null
+    );
   },
-  async set(pdf_key: string | null) {
+  async set(slot: FestivalCalendarSlot, pdf_key: string | null) {
     await ensureSchema();
     const updated_at = new Date().toISOString();
-    await sql`
-      INSERT INTO festival_calendar (id, pdf_key, updated_at) VALUES (1, ${pdf_key}, ${updated_at})
-      ON CONFLICT (id) DO UPDATE SET pdf_key = ${pdf_key}, updated_at = ${updated_at}
-    `;
+    if (slot === 1) {
+      await sql`
+        INSERT INTO festival_calendar (id, pdf_key, updated_at) VALUES (1, ${pdf_key}, ${updated_at})
+        ON CONFLICT (id) DO UPDATE SET pdf_key = ${pdf_key}, updated_at = ${updated_at}
+      `;
+    } else {
+      await sql`
+        INSERT INTO festival_calendar (id, pdf_key_2, updated_at_2) VALUES (1, ${pdf_key}, ${updated_at})
+        ON CONFLICT (id) DO UPDATE SET pdf_key_2 = ${pdf_key}, updated_at_2 = ${updated_at}
+      `;
+    }
     return { pdf_key, updated_at };
   }
 };

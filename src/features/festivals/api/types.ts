@@ -23,14 +23,19 @@ export type FestivalMutationPayload = {
   display_order: number;
 };
 
-export type FestivalCalendarPdf = {
+export type FestivalCalendarPdfSlot = {
   pdf_key: string | null;
   updated_at: string | null;
   viewUrl: string | null;
 };
 
+export type FestivalCalendarSlotName = 'currentYear' | 'nextYear';
+
 export type FestivalCalendarPdfResponse = {
   success: boolean;
   message?: string;
-  calendar: FestivalCalendarPdf;
+  calendar: {
+    currentYear: FestivalCalendarPdfSlot;
+    nextYear: FestivalCalendarPdfSlot;
+  };
 };

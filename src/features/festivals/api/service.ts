@@ -4,8 +4,14 @@ import type {
   FestivalListResponse,
   FestivalResponse,
   FestivalMutationPayload,
-  FestivalCalendarPdfResponse
+  FestivalCalendarPdfResponse,
+  FestivalCalendarSlotName
 } from './types';
+
+const SLOT_PARAM: Record<FestivalCalendarSlotName, string> = {
+  currentYear: '1',
+  nextYear: '2'
+};
 
 function toQueryString(filters: FestivalFilters) {
   const params = new URLSearchParams();
@@ -48,15 +54,21 @@ export async function getFestivalCalendarPdf(): Promise<FestivalCalendarPdfRespo
 // Multipart upload — bypasses apiClient (which always sets
 // Content-Type: application/json) since the browser needs to set its own
 // multipart boundary.
-export async function uploadFestivalCalendarPdf(file: File) {
+export async function uploadFestivalCalendarPdf(file: File, slot: FestivalCalendarSlotName) {
   const formData = new FormData();
   formData.append('file', file);
-  const res = await fetch('/api/festivals/pdf', { method: 'POST', body: formData });
-  const data = (await res.json()) as FestivalCalendarPdfResponse & { message?: string };
+  const res = await fetch(`/api/festivals/pdf?slot=${SLOT_PARAM[slot]}`, {
+    method: 'POST',
+    body: formData
+  });
+  const data = (await res.json()) as { success: boolean; message?: string };
   if (!res.ok || !data.success) throw new Error(data.message ?? 'Upload failed');
   return data;
 }
 
-export async function removeFestivalCalendarPdf() {
-  return apiClient<{ success: boolean; message: string }>('/festivals/pdf', { method: 'DELETE' });
+export async function removeFestivalCalendarPdf(slot: FestivalCalendarSlotName) {
+  return apiClient<{ success: boolean; message: string }>(
+    `/festivals/pdf?slot=${SLOT_PARAM[slot]}`,
+    { method: 'DELETE' }
+  );
 }
