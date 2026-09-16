@@ -874,8 +874,13 @@ export const festivalCalendarStore = {
         ON CONFLICT (id) DO UPDATE SET pdf_key = ${pdf_key}, updated_at = ${updated_at}
       `;
     } else {
+      // `updated_at` (slot 1's column) is NOT NULL with no default, and
+      // Postgres validates that on the proposed insert row before it even
+      // gets to the ON CONFLICT check — so it must be supplied here too,
+      // even though a conflict (the common case) never touches it.
       await sql`
-        INSERT INTO festival_calendar (id, pdf_key_2, updated_at_2) VALUES (1, ${pdf_key}, ${updated_at})
+        INSERT INTO festival_calendar (id, pdf_key_2, updated_at_2, updated_at)
+        VALUES (1, ${pdf_key}, ${updated_at}, ${updated_at})
         ON CONFLICT (id) DO UPDATE SET pdf_key_2 = ${pdf_key}, updated_at_2 = ${updated_at}
       `;
     }
